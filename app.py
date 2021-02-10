@@ -27,8 +27,10 @@ def login():
     user_name = request.form.get('username')
     user_pwd = request.form.get('password')
 
-    user = login_user(user_name, user_pwd)
-    return render_template('/auth/login.html', user=user)    
+    if login_user(user_name, user_pwd):
+        return render_template('/auth/register.html')
+    else:
+        return render_template('/auth/login.html' )    
 
 
 @app.route("/auth/register", methods=['GET', 'POST'])
