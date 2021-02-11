@@ -1,6 +1,6 @@
-from flask import Flask, redirect, url_for, render_template, request
+from flask import Flask, redirect, url_for, render_template, request, session, g
 from models import db
-from models import create_user, login_user
+from models import create_user, login_user, ListAll,create_toDo, ToDO
 
 # Flask
 app = Flask(__name__)
@@ -27,11 +27,20 @@ def login():
     user_name = request.form.get('username')
     user_pwd = request.form.get('password')
 
-    if login_user(user_name, user_pwd):
-        return render_template('/auth/register.html')
+    user = login_user(user_name, user_pwd)
+    if user is not None:
+        g.user = user
+        return redirect(url_for('ToDOListAll'))
+
     else:
         return render_template('/auth/login.html' )    
 
+@app.route("/auth/logout/")
+def logout():
+
+    g.user=None
+
+    return redirect(url_for('index'))
 
 @app.route("/auth/register", methods=['GET', 'POST'])
 def register():
@@ -42,6 +51,39 @@ def register():
 
     user = create_user(user_name, user_pwd)
     return render_template('/auth/register.html', user=user)    
+
+@app.route("/ToDo/ListAll")
+def ToDOListAll():
+
+    toDo_userId = session['userid']
+    toDo_description = request.form.get
+    toDos = ListAll( toDo_userId )
+
+    return render_template('/ToDo/ListAll.html',toDos = toDos)
+
+@app.route('/add', methods=['GET', 'POST'])
+def add():
+
+    if request.method == 'GET':
+        return render_template('/ToDo/add.html')
+
+    toDo_userId = session['userid']
+    toDo_description = request.form.get('description')
+    toDo_due_date = request.form.get('due_Date')
+    toDo_status = "T"
+
+    toDo = create_toDo( toDo_userId, toDo_description,  toDo_due_date, toDo_status)
+
+    return redirect(url_for('ToDOListAll'))
+
+@app.route('/delete/<int:toDoiD>', methods=['POST'], )
+def delete_toDo( toDoiD ):
+
+    toDo = ToDO.query.get_or_404( toDoiD )
+    db.session.delete( toDo )
+    db.session.commit()
+
+    return redirect(url_for('ToDOListAll'))
 
 if __name__ == "__main__":
     app.run(port=3000)
