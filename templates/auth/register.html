@@ -5,6 +5,12 @@
   <h1>{% block title %}Register{% endblock %}</h1>
 {% endblock %}
 
+{% if User %}
+
+<p><strong>{{ User.username }}</strong> successfully created! Add another below.</p>
+
+{% endif %}
+
 {% block content %}
   <form method="post">
     <label for="username">Username</label>

@@ -2,8 +2,8 @@
 <nav>
     <h1>Flaskr</h1>
     <ul>
-      {% if g.user %}
-        <li><span>{{ g.user }}</span>
+      {% if session['username'] %}
+        <li><span>{{ session['username'] }}</span>
         <li><a href="{{ url_for('logout') }}">Log Out</a>
       {% else %}
         <li><a href="{{ url_for('register') }}">Register</a>
@@ -12,14 +12,28 @@
     </ul>s
   </nav>
 <ul>
-<h3>To Do - Menu</h3>
+<body><h3>To Do - Menu</h3>
 {% for toDo in toDos %}
-    <li>{{ toDo.description }} - {{ toDo.due_Date }} - {{ g.user }}</li>
-    <form action="{{ url_for('delete_toDo', toDoiD = toDo.id ) }}" method=post class=delete-todo>
-        <input type=hidden value="{{ toDo.id }}"/>
-        <input type=submit value=Delete name=toDo_to_delete">
-    </form>
+  {% if not toDo.complete %}
+    <div class="ui segment">
+        <p>{{ toDo.title }} - {{ toDo.due_date }} </p>
+        <a class="ui blue button" href="/update/{{ toDo.id }}">Update</a> 
+        <a class="ui red button" href="/delete/{{ toDo.id }}">Delete</a>
+    </div>
+  {% endif %}
 {% endfor %}
+<h3>Completed </h3>
+{% for toDo in toDos %}
+    {% if toDo.complete %}
+      <div class="ui segment">
+        <p>{{ toDo.title }} - {{ toDo.due_date }}</p>
+        <a class="ui blue button" href="/update/{{ toDo.id }}">Update</a> 
+        <a class="ui red button" href="/delete/{{ toDo.id }}">Delete</a>
+      </div>
+    {% endif %}
+{% endfor %}
+
 </ul>
+</body>
 
 <a href="/add">Add Item</a>

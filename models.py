@@ -22,15 +22,15 @@ class User(db.Model):
 class ToDO(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     userid = db.Column(db.Integer, unique=False, nullable=False)
-    description = db.Column(db.String(80), unique=False, nullable=False)
-    due_date = db.Column(db.DateTime, nullable=False,default=datetime.utcnow)
-    status = db.Column(db.String(1), unique=False, nullable=False)
+    title = db.Column(db.String(80), unique=False, nullable=False)
+    due_date = db.Column(db.Date, nullable=True)
+    complete = db.Column(db.Boolean)
 
-    def __init__(self, userid, description, due_Date, status ):
+    def __init__(self, userid, title, due_Date, complete ):
         self.userid = userid
-        self.description = description
+        self.title = title
         self.due_date = due_Date
-        self.status = status
+        self.complete = complete
 
     def __repr__(self):
         return '<ToDO %r>' % self.ToDO
@@ -52,11 +52,7 @@ def login_user(user_name, pass_word):
 
 def create_toDo( tuserid, tdescription, tdueDate, tstatus ):
 
-    #date_str = '29/12/2017' # The date - 29 Dec 2017
-    format_str = '%Y/%m/%d' # The format
-    datetime_obj = datetime.strptime( tdueDate, format_str)
-    currenttoDo = ToDO( tuserid, tdescription, datetime_obj, tstatus) 
-    datetime.s
+    currenttoDo = ToDO( tuserid, tdescription, tdueDate, tstatus) 
 
     db.session.add(currenttoDo)
 
@@ -67,7 +63,7 @@ def create_toDo( tuserid, tdescription, tdueDate, tstatus ):
 
 def ListAll( tuserid ):
 
-    toDos = ToDO.query.filter_by(userid=tuserid).all()
+    toDos = ToDO.query.filter_by(userid=tuserid).order_by("due_date")
 
     return toDos
 
