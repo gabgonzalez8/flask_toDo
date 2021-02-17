@@ -1,15 +1,8 @@
+{% extends 'base.html' %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <h3>Add ToDO</h3>
-<!--
-{% if dessert %}
 
-<p><strong>{{dessert.name}}</strong> successfully created! Add another below.</p>
-<p><a href="/">Back to Dessert List</a></p>
-
-{% endif %}
--->
-
-<!-- The form action and method correspond to a Flask route -->
+{% block content %}
 <form action="/add" method="POST">
 
 <label for="description">Title</label>
@@ -22,3 +15,4 @@
 <input type="submit" value="Add"/>
 
 </form>
+{% endblock %}

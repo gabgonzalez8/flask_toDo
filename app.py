@@ -1,7 +1,8 @@
-from flask import Flask, redirect, url_for, render_template, request, session, g
-from models import db
+from flask import Flask, redirect, url_for, render_template, request, session, g, flash
+from models import db,User
 from models import create_user, login_user, ListAll,create_toDo, ToDO
 import datetime
+from forms import RegistrationForm
 
 # Flask
 app = Flask(__name__)
@@ -30,13 +31,18 @@ def login():
 
     user = login_user(user_name, user_pwd)
     if user is not None:
-        session['userid']= user.id
-        session['username'] = user.username
-        g.user = user
-        return redirect(url_for('ToDOListAll'))
+        if user.password == user_pwd:
+            session['userid']= user.id
+            session['username'] = user.username
+            g.user = user
+            return redirect(url_for('ToDOListAll'))
+        else:
+            flash('Invalid Credentials....')
 
     else:
-        return render_template('/auth/login.html' )    
+        flash('Invalid Credentials....')
+
+    return render_template('/auth/login.html' )    
 
 @app.route("/auth/logout/")
 def logout():
@@ -49,13 +55,15 @@ def logout():
 
 @app.route("/auth/register", methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET':
-        return render_template("/auth/register.html")
-    user_name = request.form.get('username')
-    user_pwd = request.form.get('password')
 
-    user = create_user(user_name, user_pwd)
-    return render_template('/auth/register.html', user=user)    
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data, password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+    
+    return render_template('/auth/register.html', form=form)   
 
 @app.route("/ToDo/ListAll")
 def ToDOListAll():
