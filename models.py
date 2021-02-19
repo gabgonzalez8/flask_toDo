@@ -37,16 +37,6 @@ class ToDO(db.Model):
     def __repr__(self):
         return '<ToDO %r>' % self.ToDO
 
-def create_user(username, password):
-
-    currentuser = User( username, password ) 
-
-    db.session.add(currentuser)
-
-    db.session.commit()
-
-    return currentuser
-
 def login_user(user_name, pass_word):
     result = User.query.filter_by(username=user_name).first()
     return result

@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, render_template, request, session, g, flash
 from models import db,User
-from models import create_user, login_user, ListAll,create_toDo, ToDO
+from models import  login_user, ListAll,create_toDo, ToDO
 import datetime
 from forms import RegistrationForm
 
